@@ -88,14 +88,19 @@ export default function ResponsiveDrawer(props: Props) {
 
     const drawer = (
         <div>
-            <div className={classes.toolbar} />
+            <div className={classes.toolbar} style={{ color: '#303030', display: 'flex', alignItems: 'center', paddingLeft: 16 }}>
+                <MenuIcon style={{ marginRight: 30 }} />
+                <Typography variant="h6" noWrap>
+                    目录
+                </Typography>
+            </div>
             <Divider />
             <List
                 component="nav"
                 aria-labelledby="nested-list-subheader"
                 subheader={
                     <ListSubheader component="div" id="nested-list-subheader">
-                        Nested List Items
+                        OrangeX4's Notes
                     </ListSubheader>
                 }
             >
@@ -149,8 +154,8 @@ export default function ResponsiveDrawer(props: Props) {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" noWrap>
-                        Responsive drawer
-          </Typography>
+                        标题
+                    </Typography>
                 </Toolbar>
             </AppBar>
             <nav className={classes.drawer} aria-label="mailbox folders">
