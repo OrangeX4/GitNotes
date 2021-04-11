@@ -13,7 +13,7 @@ import { makeStyles, useTheme, Theme, createStyles } from '@material-ui/core/sty
 
 import SubList from './SubList'
 
-import { Folder } from './template'
+import { Folder, File } from './template'
 
 const drawerWidth = 300
 
@@ -59,66 +59,95 @@ interface Props {
     window?: () => Window
 }
 
+function getData(folder: Folder, callback: (folders: Folder[], files: File[]) => void) {
+    const folders = [] as Folder[]
+    const files = [] as File[]
+    var request = new XMLHttpRequest()
+    request.open('GET', 'https://git.nju.edu.cn/api/v4/projects/2047/repository/tree?per_page=1000&path=.&ref=master')
+    request.onreadystatechange = function () {
+        if (request.readyState === 4 && request.status === 200) {
+            const tree = JSON.parse(request.responseText)
+            tree.forEach((item: any) => {
+                if (item.type === 'tree') {
+                    folders.push({
+                        name: item.name,
+                        parent: folder,
+                        folders: [],
+                        files: []
+                    })
+                } else if (item.type === 'blob') {
+                    files.push({
+                        name: item.name,
+                        parent: folder
+                    })
+                }
+            })
+            callback(folders, files)
+        }
+    }
+    request.send(null)
+}
+
 const folder = {
     name: 'root',
     parent: null,
-    folders: [],
+    folders: getData,
     files: []
 } as Folder
 
-folder.folders = [
-    {
-        name: 'Folders 1',
-        parent: folder,
-        folders: [],
-        files: []
-    } as Folder,
-    {
-        name: 'Folders 2',
-        parent: folder,
-        folders: (f, callback) => {
-            setTimeout(() => {
-                callback([], [
-                    {
-                        name: 'File 1',
-                        parent: f
-                    },
-                    {
-                        name: 'File 2',
-                        parent: f
-                    },
-                ])
-            }, 1000)
-        },
-        files: []
-    } as Folder,
-]
+// folder.folders = [
+//     {
+//         name: 'Folders 1',
+//         parent: folder,
+//         folders: [],
+//         files: []
+//     } as Folder,
+//     {
+//         name: 'Folders 2',
+//         parent: folder,
+//         folders: (f, callback) => {
+//             setTimeout(() => {
+//                 callback([], [
+//                     {
+//                         name: 'File 1',
+//                         parent: f
+//                     },
+//                     {
+//                         name: 'File 2',
+//                         parent: f
+//                     },
+//                 ])
+//             }, 1000)
+//         },
+//         files: []
+//     } as Folder,
+// ]
 
-folder.files = [
-    {
-        name: 'File.md',
-        parent: folder
-    },
-    {
-        name: 'File 2',
-        parent: folder
-    },
-]
+// folder.files = [
+//     {
+//         name: 'File.md',
+//         parent: folder
+//     },
+//     {
+//         name: 'File 2',
+//         parent: folder
+//     },
+// ]
 
-folder.folders[0].folders = [
-    {
-        name: 'Folders 1',
-        parent: folder.folders[0],
-        folders: [],
-        files: []
-    } as Folder,
-    {
-        name: 'Folders 2',
-        parent: folder.folders[0],
-        folders: [],
-        files: []
-    } as Folder,
-]
+// folder.folders[0].folders = [
+//     {
+//         name: 'Folders 1',
+//         parent: folder.folders[0],
+//         folders: [],
+//         files: []
+//     } as Folder,
+//     {
+//         name: 'Folders 2',
+//         parent: folder.folders[0],
+//         folders: [],
+//         files: []
+//     } as Folder,
+// ]
 
 export default function ResponsiveDrawer(props: Props) {
     const { window } = props

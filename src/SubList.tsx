@@ -53,6 +53,7 @@ export default function SubList(props: Props) {
         f.folders(f, (folders, files) => {
             f.folders = folders
             f.files = files
+            setOpens(Array(f.folders.length).fill(false))
             props.fresh()
         })
         return (
