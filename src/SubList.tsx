@@ -1,11 +1,12 @@
 import React from 'react'
-import InboxIcon from '@material-ui/icons/MoveToInbox'
+import FolderIcon from '@material-ui/icons/Folder'
+import FileIcon from '@material-ui/icons/InsertDriveFile'
+import MdIcon from '@material-ui/icons/Description';
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
 import Collapse from '@material-ui/core/Collapse'
-import DraftsIcon from '@material-ui/icons/Drafts'
 import ExpandLess from '@material-ui/icons/ExpandLess'
 import ExpandMore from '@material-ui/icons/ExpandMore'
 import Skeleton from '@material-ui/lab/Skeleton'
@@ -16,6 +17,7 @@ import { Folder } from './template'
 interface Props {
     indent?: number
     folder: Folder
+    fresh: () => void
 }
 
 function flatten2d(arr: JSX.Element[][]) {
@@ -26,10 +28,18 @@ function flatten2d(arr: JSX.Element[][]) {
     return result
 }
 
+function isMarkdown(name: string) {
+    if(name.length >= 3 && name.slice(name.length - 3, name.length) === '.md') {
+        return true
+    } else {
+        return false
+    }
+}
+
 export default function SubList(props: Props) {
     const theme = useTheme()
-    const f = props.folder
     const indent = props.indent ? props.indent : 2
+    const f = props.folder
 
     const [opens, setOpens] = React.useState(
         Array(typeof (f.folders) === 'function' ? 0 : f.folders.length).fill(false) as boolean[]
@@ -40,7 +50,11 @@ export default function SubList(props: Props) {
     }
 
     if (typeof (f.folders) === 'function') {
-        // f.folders()
+        f.folders(f, (folders, files) => {
+            f.folders = folders
+            f.files = files
+            props.fresh()
+        })
         return (
             <List component="div" disablePadding>
                 <ListItem button style={{ paddingLeft: theme.spacing(indent) }}>
@@ -58,13 +72,13 @@ export default function SubList(props: Props) {
                             key={index}
                             style={{ paddingLeft: theme.spacing(indent) }}>
                             <ListItemIcon>
-                                <InboxIcon />
+                                <FolderIcon />
                             </ListItemIcon>
                             <ListItemText primary={folder.name} />
                             {opens[index] ? <ExpandLess /> : <ExpandMore />}
                         </ListItem>,
                         <Collapse key={f.folders.length + index} in={opens[index]} timeout="auto" unmountOnExit>
-                            <SubList indent={indent + 4} folder={folder} />
+                            <SubList indent={indent + 4} folder={folder} fresh={props.fresh} />
                         </Collapse>
                     ]))
                 }
@@ -72,7 +86,7 @@ export default function SubList(props: Props) {
                     f.files.map((file, index) => (
                         <ListItem button key={2 * f.folders.length + index} style={{ paddingLeft: theme.spacing(indent) }}>
                             <ListItemIcon>
-                                <DraftsIcon />
+                                { isMarkdown(file.name) ? <MdIcon /> : <FileIcon /> }
                             </ListItemIcon>
                             <ListItemText primary={file.name} />
                         </ListItem>

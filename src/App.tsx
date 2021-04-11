@@ -1,4 +1,5 @@
 import React from 'react'
+import { useState } from 'react'
 import AppBar from '@material-ui/core/AppBar'
 import CssBaseline from '@material-ui/core/CssBaseline'
 import Divider from '@material-ui/core/Divider'
@@ -69,20 +70,33 @@ folder.folders = [
     {
         name: 'Folders 1',
         parent: folder,
-        folders: () => {},
+        folders: [],
         files: []
     } as Folder,
     {
         name: 'Folders 2',
         parent: folder,
-        folders: () => {},
+        folders: (f, callback) => {
+            setTimeout(() => {
+                callback([], [
+                    {
+                        name: 'File 1',
+                        parent: f
+                    },
+                    {
+                        name: 'File 2',
+                        parent: f
+                    },
+                ])
+            }, 1000)
+        },
         files: []
     } as Folder,
 ]
 
 folder.files = [
     {
-        name: 'File 1',
+        name: 'File.md',
         parent: folder
     },
     {
@@ -95,13 +109,13 @@ folder.folders[0].folders = [
     {
         name: 'Folders 1',
         parent: folder.folders[0],
-        folders: () => {},
+        folders: [],
         files: []
     } as Folder,
     {
         name: 'Folders 2',
         parent: folder.folders[0],
-        folders: () => {},
+        folders: [],
         files: []
     } as Folder,
 ]
@@ -116,6 +130,9 @@ export default function ResponsiveDrawer(props: Props) {
         setMobileOpen(!mobileOpen)
     }
 
+    const [freshCount, setFreshCount] = useState(0)
+    const fresh = () => setFreshCount(freshCount + 1)
+
     const drawer = (
         <div>
             <div className={classes.toolbar} style={{ color: '#303030', display: 'flex', alignItems: 'center', paddingLeft: 16 }}>
@@ -125,7 +142,7 @@ export default function ResponsiveDrawer(props: Props) {
                 </Typography>
             </div>
             <Divider />
-            <SubList folder={folder} />
+            <SubList folder={folder} fresh={fresh} />
         </div>
     )
 
