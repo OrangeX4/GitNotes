@@ -217,7 +217,10 @@ function getQuery(): Query {
     return result
 }
 
-const host = 'http://localhost:3000/'
+function GetHostUrl() {
+    return document.location.toString().split("?")[0]
+}
+
 
 export default function App() {
     const classes = useStyles()
@@ -358,13 +361,13 @@ export default function App() {
                         <h1>这是什么?</h1>
                         <p>这是一个由 <b>OrangeX4</b> 开发的<b>笔记浏览应用</b>, 用于浏览以 <b>Markdown</b> 书写的, 存放在 <b>GitLab 或 GitHub</b> 上的笔记.</p>
                         <p>优点: <b>数学公式支持和移动端适配.</b></p>
-                        <a href="https://github.com/OrangeX4/NJUAI-Notes">GitHub 地址</a>
+                        <a href="https://github.com/OrangeX4/GitNotes">GitHub 地址</a>
 
                         <h1>OrangeX4 的笔记</h1>
-                        <h2><a href={host + "?git=gitlab"}>OrangeX4's Notes</a></h2>
+                        <h2><a href="./?git=gitlab">OrangeX4's Notes</a></h2>
                         <h1>其他笔记</h1>
-                        <h2><a href={host + "?git=github&github=typoverflow/note"}>Typoverflow's Notes</a></h2>
-                        <h2><a href={host + "?git=github&github=fengdu78/Coursera-ML-AndrewNg-Notes"}>Coursera-ML-AndrewNg-Notes</a></h2>
+                        <h2><a href="./?git=github&github=typoverflow/note">Typoverflow's Notes</a></h2>
+                        <h2><a href="./?git=github&github=fengdu78/Coursera-ML-AndrewNg-Notes">Coursera-ML-AndrewNg-Notes</a></h2>
 
                         <h1>GitHub</h1>
                         <form className={classes.github} noValidate autoComplete="off">
@@ -372,7 +375,7 @@ export default function App() {
                             <TextField id="standard-basic" value={githubToken} onChange={(e) => setGithubToken(e.target.value)} label="Token" />
                             <Button variant="outlined"
                                 color="primary"
-                                onClick={() => { window.location.href = `${host}?git=github&github=${githubRepo}${githubToken === '' ? '' : '&token=' + githubToken}` }}
+                                onClick={() => { window.location.href = `${GetHostUrl()}?git=github&github=${githubRepo}${githubToken === '' ? '' : '&token=' + githubToken}` }}
                                 style={{ height: 50, width: 100, fontSize: 16 }}>浏览</Button>
                         </form>
                         <p>GitHub 对于 API 访问有一定的限制, 超过次数便需要 Token 才能继续浏览.</p>
@@ -384,7 +387,7 @@ export default function App() {
                             <TextField id="standard-basic" value={gitlabId} onChange={(e) => setGitlabId(e.target.value)} label="Id" />
                             <Button variant="outlined"
                                 color="primary"
-                                onClick={() => { window.location.href = `${host}?git=gitlab&gitlab=${gitlabHost}&id=${gitlabId}` }}
+                                onClick={() => { window.location.href = `${GetHostUrl()}?git=gitlab&gitlab=${gitlabHost}&id=${gitlabId}` }}
                                 style={{ height: 50, width: 100, fontSize: 16 }}>浏览</Button>
                         </form>
                         <p>Host 是 GitLab 所在的域名, 如 "gitlab.com" 和 "git.nju.edu.cn".</p>

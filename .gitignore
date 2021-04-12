@@ -9,7 +9,9 @@
 /coverage
 
 # production
-/build
+# /build
+workers-site
+wrangler.toml
 
 # misc
 .DS_Store
