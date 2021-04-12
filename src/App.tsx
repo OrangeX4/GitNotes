@@ -9,8 +9,9 @@ import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
-import ReactMarkdown from 'react-markdown'
 import { makeStyles, useTheme, Theme, createStyles } from '@material-ui/core/styles'
+
+import './App.css'
 
 import SubList from './SubList'
 
@@ -106,6 +107,43 @@ const folder = {
 } as Folder
 
 
+const md = require('markdown-it')()
+const mk = require('markdown-it-katex')
+md.use(mk, {
+    throwOnError: true,
+    errorColor: "#cc0000",
+    delimiters:
+        [
+            { left: "$$", right: "$$", display: true },
+            { left: "$", right: "$", display: true }
+        ]
+})
+
+function contentProcess(content: string, file: File | null): string {
+    if (file) {
+        const preUrl = 'https://git.nju.edu.cn/api/v4/projects/2047/repository/files/'
+        const aftUrl = '/raw?ref=master'
+        const expression = /!\[([\u4e00-\u9fa5a-z0-9-_/. ]*)\]\((\.\/)?([\u4e00-\u9fa5a-z0-9-_/. ]*)\)/g
+
+        let start = 0
+        let newContent = ''
+        let array
+        while ((array = expression.exec(content)) !== null) {
+            newContent += content.slice(start, expression.lastIndex - array[0].length)
+            newContent += `![${array[1]}](${preUrl}${encodeURI(getPath(file.parent) + array[3]).replace(/\//g, '%2F')}${aftUrl})`
+            start = expression.lastIndex
+        }
+        newContent += content.slice(start, content.length)
+        content = newContent
+    }
+    return content.replace(/\\rm/g, '\\text')
+        .replace(/\\boldsymbol/g, '\\bold')
+        .replace(/\$ +/g, '$')
+        .replace(/ +\$/g, '$')
+        .replace(/\\exist/g, '\\exists')
+        .replace(/\\empty/g, '\\emptyset')
+}
+
 export default function App(props: Props) {
     const { window } = props
     const classes = useStyles()
@@ -122,6 +160,7 @@ export default function App(props: Props) {
         request.open('GET', url)
         request.onreadystatechange = function () {
             if (request.readyState === 4 && request.status === 200) {
+                setCurrentFile(file)
                 setTitle(file.name)
                 setContent(request.responseText)
             }
@@ -129,6 +168,16 @@ export default function App(props: Props) {
         request.send(null)
     }
 
+    // Load README.md
+    function handleLoad(files: File[]) {
+        files.forEach((file) => {
+            if (file.name === 'README.md') {
+                handleFileClick(file)
+            }
+        })
+    }
+
+    const [currentFile, setCurrentFile] = useState(null as File | null)
     const [title, setTitle] = useState('标题')
     const [content, setContent] = useState('')
 
@@ -144,7 +193,7 @@ export default function App(props: Props) {
                 </Typography>
             </div>
             <Divider />
-            <SubList folder={folder} fresh={fresh} onClick={handleFileClick} />
+            <SubList folder={folder} fresh={fresh} onClick={handleFileClick} onLoad={handleLoad} />
         </div>
     )
 
@@ -202,9 +251,7 @@ export default function App(props: Props) {
             </nav>
             <main className={classes.content}>
                 <div className={classes.toolbar} />
-                <ReactMarkdown>
-                    {content}
-                </ReactMarkdown>
+                <div dangerouslySetInnerHTML={{ __html: md.render(contentProcess(content, currentFile)) }} />
             </main>
         </div>
     )

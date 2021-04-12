@@ -19,6 +19,7 @@ interface Props {
     folder: Folder
     fresh: () => void
     onClick: (file: File) => void
+    onLoad?: (files: File[]) => void
 }
 
 function flatten2d(arr: JSX.Element[][]) {
@@ -55,6 +56,9 @@ export default function SubList(props: Props) {
             f.folders = folders
             f.files = files
             setOpens(Array(f.folders.length).fill(false))
+            if (props.onLoad) {
+                props.onLoad(files)
+            }
             props.fresh()
         })
         return (
