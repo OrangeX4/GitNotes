@@ -54,11 +54,14 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 interface Props {
-    /**
-     * Injected by the documentation to work in an iframe.
-     * You won't need it on your project.
-     */
-    window?: () => Window
+}
+
+function isMarkdown(name: string) {
+    if (name.length >= 3 && name.slice(name.length - 3, name.length) === '.md') {
+        return true
+    } else {
+        return false
+    }
 }
 
 function getPath(folder: Folder): string {
@@ -70,23 +73,29 @@ function getPath(folder: Folder): string {
 }
 
 function getFolderData(folder: Folder, callback: (folders: Folder[], files: File[]) => void) {
+    const query = getQuery()
     const folders = [] as Folder[]
     const files = [] as File[]
     const request = new XMLHttpRequest()
-    const url = 'https://git.nju.edu.cn/api/v4/projects/2047/repository/tree?per_page=1000&ref=master&path=' + encodeURI(getPath(folder))
+    let url = ''
+    if (query.git === 'gitlab') {
+        url = `https://${query.gitlab}/api/v4/projects/${query.id}/repository/tree?per_page=1000&ref=master&path=${encodeURI(getPath(folder))}`
+    } else {
+        url = `https://api.github.com/repos/${query.github}/contents/${encodeURI(getPath(folder))}${query.token ? `?access_token=${query.token}` : ''}`
+    }
     request.open('GET', url)
     request.onreadystatechange = function () {
         if (request.readyState === 4 && request.status === 200) {
             const tree = JSON.parse(request.responseText)
             tree.forEach((item: any) => {
-                if (item.type === 'tree') {
+                if (query.git === 'gitlab' ? item.type === 'tree' : item.type === 'dir') {
                     folders.push({
                         name: item.name,
                         parent: folder,
                         folders: getFolderData,
                         files: []
                     })
-                } else if (item.type === 'blob') {
+                } else if (query.git === 'gitlab' ? item.type === 'blob' : item.type === 'file') {
                     files.push({
                         name: item.name,
                         parent: folder
@@ -108,6 +117,7 @@ const folder = {
 
 const hljs = require('highlight.js')
 const md = require('markdown-it')({
+    html: true,
     highlight: function (str: string, lang: string) {
         if (lang && hljs.getLanguage(lang)) {
             try {
@@ -125,28 +135,86 @@ md.use(mk, {
     errorColor: "#cc0000",
 })
 
+
 function contentProcess(content: string, file: File | null): string {
     if (file) {
-        const preUrl = 'https://git.nju.edu.cn/api/v4/projects/2047/repository/files/'
-        const aftUrl = '/raw?ref=master'
-        const expression = /!\[([\u4e00-\u9fa5a-z0-9-_/. ]*)\]\((\.\/)?([\u4e00-\u9fa5a-z0-9-_/. ]*)\)/g
+        const query = getQuery()
+        let preUrl = ''
+        let aftUrl = ''
+        if (query.git === 'gitlab') {
+            preUrl = `https://${query.gitlab}/api/v4/projects/${query.id}/repository/files/`
+            aftUrl = '/raw?ref=master'
+        } else {
+            preUrl = `https://raw.githubusercontent.com/${query.github}/master/`
+            aftUrl = ''
+        }
 
+        // Markdown Image
+        const mdExpression = /!\[([\u4e00-\u9fa5a-z0-9-_/. ]*)\]\((\.\/)?([\u4e00-\u9fa5a-z0-9-_/. ]*)\)/g
         let start = 0
         let newContent = ''
         let array
-        while ((array = expression.exec(content)) !== null) {
-            newContent += content.slice(start, expression.lastIndex - array[0].length)
-            newContent += `![${array[1]}](${preUrl}${encodeURI(getPath(file.parent) + array[3]).replace(/\//g, '%2F')}${aftUrl})`
-            start = expression.lastIndex
+        while ((array = mdExpression.exec(content)) !== null) {
+            newContent += content.slice(start, mdExpression.lastIndex - array[0].length)
+            newContent += `![${array[1]}](${preUrl}${query.git === 'gitlab' ?
+                encodeURI(getPath(file.parent) + array[3]).replace(/\//g, '%2F') :
+                encodeURI(getPath(file.parent) + array[3])
+                }${aftUrl})`
+            start = mdExpression.lastIndex
+        }
+        newContent += content.slice(start, content.length)
+        content = newContent
+        
+        // Html Image
+        const imgExpression = /<img +src="([\u4e00-\u9fa5a-z0-9-_/. ]*)"([^>]*)>/g
+        start = 0
+        newContent = ''
+        while ((array = imgExpression.exec(content)) !== null) {
+            newContent += content.slice(start, imgExpression.lastIndex - array[0].length)
+            newContent += `<img src="${preUrl}${query.git === 'gitlab' ?
+                encodeURI(getPath(file.parent) + array[1]).replace(/\//g, '%2F') :
+                encodeURI(getPath(file.parent) + array[1])
+                }${aftUrl}"${array[2]}>`
+            start = imgExpression.lastIndex
         }
         newContent += content.slice(start, content.length)
         content = newContent
     }
-    return content
+    return content.replace(/\$ +/g, '$').replace(/ +\$/g, '$')
 }
 
+interface Query {
+    [key: string]: string
+}
+
+function getQuery(): Query {
+    const result = {} as Query
+    if (window.location.search.length > 1) {
+        const query = window.location.search.substring(1)
+        const vars = query.split("&")
+        for (var i = 0; i < vars.length; i++) {
+            var pair = vars[i].split("=")
+            result[pair[0]] = pair[1]
+        }
+    }
+    if (result.git !== 'github' && result.git !== 'gitlab') {
+        result.git = 'github'
+    }
+    if (result.git === 'gitlab') {
+        if (!result.gitlab) {
+            result.gitlab = 'git.nju.edu.cn'
+            result.id = '2047'
+        }
+    } else {
+        if (!result.github) {
+            result.github = 'OrangeX4/NJUAI-Notes'
+        }
+    }
+    return result
+}
+
+
 export default function App(props: Props) {
-    const { window } = props
     const classes = useStyles()
     const theme = useTheme()
     const [mobileOpen, setMobileOpen] = React.useState(false)
@@ -156,8 +224,26 @@ export default function App(props: Props) {
     }
 
     function handleFileClick(file: File) {
+        const query = getQuery()
+        let preUrl = ''
+        let aftUrl = ''
+        if (query.git === 'gitlab') {
+            preUrl = `https://${query.gitlab}/api/v4/projects/${query.id}/repository/files/`
+            aftUrl = '/raw?ref=master'
+        } else {
+            preUrl = `https://raw.githubusercontent.com/${query.github}/master/`
+            aftUrl = ''
+        }
+        const url = `${preUrl}${query.git === 'gitlab' ?
+            encodeURI(getPath(file.parent) + file.name).replace(/\//g, '%2F') :
+            encodeURI(getPath(file.parent) + file.name)
+            }${aftUrl}`
+        if (!isMarkdown(file.name)) {
+            console.log(window.location.search)
+            window.open(url, '_blank')
+            return
+        }
         const request = new XMLHttpRequest()
-        const url = 'https://git.nju.edu.cn/api/v4/projects/2047/repository/files/' + encodeURI(getPath(file.parent) + file.name).replace(/\//g, '%2F') + '/raw?ref=master'
         request.open('GET', url)
         request.onreadystatechange = function () {
             if (request.readyState === 4 && request.status === 200) {
@@ -198,12 +284,10 @@ export default function App(props: Props) {
         </div>
     )
 
-    const container = window !== undefined ? () => window().document.body : undefined
-
     return (
         <div className={classes.root}>
             <CssBaseline />
-            <AppBar position="fixed" className={classes.appBar}>
+            <AppBar position="fixed" className={classes.appBar} color='default'>
                 <Toolbar>
                     <IconButton
                         color="inherit"
@@ -223,7 +307,6 @@ export default function App(props: Props) {
                 {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
                 <Hidden smUp implementation="css">
                     <Drawer
-                        container={container}
                         variant="temporary"
                         anchor={theme.direction === 'rtl' ? 'right' : 'left'}
                         open={mobileOpen}

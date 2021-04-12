@@ -6,3 +6,7 @@ img {
     border-radius: 10px;
     padding: 20px !important;
 }
+
+.MuiAppBar-colorDefault {
+    background-color: white !important;
+}
