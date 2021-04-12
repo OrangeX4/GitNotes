@@ -106,8 +106,6 @@ const folder = {
     files: []
 } as Folder
 
-
-
 const hljs = require('highlight.js')
 const md = require('markdown-it')({
     highlight: function (str: string, lang: string) {
@@ -123,7 +121,7 @@ const md = require('markdown-it')({
 })
 const mk = require('@iktakahiro/markdown-it-katex')
 md.use(mk, {
-    throwOnError: true,
+    throwOnError: false,
     errorColor: "#cc0000",
 })
 
