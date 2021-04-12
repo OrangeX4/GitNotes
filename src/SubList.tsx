@@ -12,12 +12,13 @@ import ExpandMore from '@material-ui/icons/ExpandMore'
 import Skeleton from '@material-ui/lab/Skeleton'
 import { useTheme } from '@material-ui/core/styles'
 
-import { Folder } from './template'
+import { Folder, File } from './template'
 
 interface Props {
     indent?: number
     folder: Folder
     fresh: () => void
+    onClick: (file: File) => void
 }
 
 function flatten2d(arr: JSX.Element[][]) {
@@ -29,7 +30,7 @@ function flatten2d(arr: JSX.Element[][]) {
 }
 
 function isMarkdown(name: string) {
-    if(name.length >= 3 && name.slice(name.length - 3, name.length) === '.md') {
+    if (name.length >= 3 && name.slice(name.length - 3, name.length) === '.md') {
         return true
     } else {
         return false
@@ -79,15 +80,18 @@ export default function SubList(props: Props) {
                             {opens[index] ? <ExpandLess /> : <ExpandMore />}
                         </ListItem>,
                         <Collapse key={f.folders.length + index} in={opens[index]} timeout="auto" unmountOnExit>
-                            <SubList indent={indent + 4} folder={folder} fresh={props.fresh} />
+                            <SubList indent={indent + 4} folder={folder} fresh={props.fresh} onClick={props.onClick} />
                         </Collapse>
                     ]))
                 }
                 {
                     f.files.map((file, index) => (
-                        <ListItem button key={2 * f.folders.length + index} style={{ paddingLeft: theme.spacing(indent) }}>
+                        <ListItem button
+                            onClick={() => {props.onClick(file)}}
+                            key={2 * f.folders.length + index}
+                            style={{ paddingLeft: theme.spacing(indent) }}>
                             <ListItemIcon>
-                                { isMarkdown(file.name) ? <MdIcon /> : <FileIcon /> }
+                                {isMarkdown(file.name) ? <MdIcon /> : <FileIcon />}
                             </ListItemIcon>
                             <ListItemText primary={file.name} />
                         </ListItem>

@@ -59,11 +59,20 @@ interface Props {
     window?: () => Window
 }
 
-function getData(folder: Folder, callback: (folders: Folder[], files: File[]) => void) {
+function getPath(folder: Folder): string {
+    if (folder.parent) {
+        return getPath(folder.parent) + folder.name + '/'
+    } else {
+        return ''
+    }
+}
+
+function getFolderData(folder: Folder, callback: (folders: Folder[], files: File[]) => void) {
     const folders = [] as Folder[]
     const files = [] as File[]
-    var request = new XMLHttpRequest()
-    request.open('GET', 'https://git.nju.edu.cn/api/v4/projects/2047/repository/tree?per_page=1000&path=.&ref=master')
+    const request = new XMLHttpRequest()
+    const url = 'https://git.nju.edu.cn/api/v4/projects/2047/repository/tree?per_page=1000&ref=master&path=' + encodeURI(getPath(folder))
+    request.open('GET', url)
     request.onreadystatechange = function () {
         if (request.readyState === 4 && request.status === 200) {
             const tree = JSON.parse(request.responseText)
@@ -72,7 +81,7 @@ function getData(folder: Folder, callback: (folders: Folder[], files: File[]) =>
                     folders.push({
                         name: item.name,
                         parent: folder,
-                        folders: [],
+                        folders: getFolderData,
                         files: []
                     })
                 } else if (item.type === 'blob') {
@@ -91,73 +100,36 @@ function getData(folder: Folder, callback: (folders: Folder[], files: File[]) =>
 const folder = {
     name: 'root',
     parent: null,
-    folders: getData,
+    folders: getFolderData,
     files: []
 } as Folder
 
-// folder.folders = [
-//     {
-//         name: 'Folders 1',
-//         parent: folder,
-//         folders: [],
-//         files: []
-//     } as Folder,
-//     {
-//         name: 'Folders 2',
-//         parent: folder,
-//         folders: (f, callback) => {
-//             setTimeout(() => {
-//                 callback([], [
-//                     {
-//                         name: 'File 1',
-//                         parent: f
-//                     },
-//                     {
-//                         name: 'File 2',
-//                         parent: f
-//                     },
-//                 ])
-//             }, 1000)
-//         },
-//         files: []
-//     } as Folder,
-// ]
 
-// folder.files = [
-//     {
-//         name: 'File.md',
-//         parent: folder
-//     },
-//     {
-//         name: 'File 2',
-//         parent: folder
-//     },
-// ]
-
-// folder.folders[0].folders = [
-//     {
-//         name: 'Folders 1',
-//         parent: folder.folders[0],
-//         folders: [],
-//         files: []
-//     } as Folder,
-//     {
-//         name: 'Folders 2',
-//         parent: folder.folders[0],
-//         folders: [],
-//         files: []
-//     } as Folder,
-// ]
-
-export default function ResponsiveDrawer(props: Props) {
+export default function App(props: Props) {
     const { window } = props
     const classes = useStyles()
     const theme = useTheme()
     const [mobileOpen, setMobileOpen] = React.useState(false)
 
-    const handleDrawerToggle = () => {
+    function handleDrawerToggle() {
         setMobileOpen(!mobileOpen)
     }
+
+    function handleFileClick(file: File) {
+        const request = new XMLHttpRequest()
+        const url = 'https://git.nju.edu.cn/api/v4/projects/2047/repository/files/' + encodeURI(getPath(file.parent) + file.name).replace(/\//g, '%2F') + '/raw?ref=master'
+        request.open('GET', url)
+        request.onreadystatechange = function () {
+            if (request.readyState === 4 && request.status === 200) {
+                setTitle(file.name)
+                setContent(request.responseText)
+            }
+        }
+        request.send(null)
+    }
+
+    const [title, setTitle] = useState('标题')
+    const [content, setContent] = useState('')
 
     const [freshCount, setFreshCount] = useState(0)
     const fresh = () => setFreshCount(freshCount + 1)
@@ -171,7 +143,7 @@ export default function ResponsiveDrawer(props: Props) {
                 </Typography>
             </div>
             <Divider />
-            <SubList folder={folder} fresh={fresh} />
+            <SubList folder={folder} fresh={fresh} onClick={handleFileClick} />
         </div>
     )
 
@@ -192,7 +164,7 @@ export default function ResponsiveDrawer(props: Props) {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" noWrap>
-                        标题
+                        {title}
                     </Typography>
                 </Toolbar>
             </AppBar>
@@ -230,12 +202,7 @@ export default function ResponsiveDrawer(props: Props) {
             <main className={classes.content}>
                 <div className={classes.toolbar} />
                 <Typography paragraph>
-                    Hello everyone. I am Fang Shengjun.
-                    Today I would like to talk with you a popular book.
-                    Before the start, you can scan the QR code, and you will get the handout of my presentation.
-                    I’m worried that I can’t express myself well, but I believe that you can know what I am saying with the handout.
-                    Are you ready?
-                    Let us start the presentation.
+                    {content}
                 </Typography>
             </main>
         </div>
