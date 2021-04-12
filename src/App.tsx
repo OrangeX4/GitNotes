@@ -106,6 +106,8 @@ const folder = {
     files: []
 } as Folder
 
+
+
 const hljs = require('highlight.js')
 const md = require('markdown-it')({
     highlight: function (str: string, lang: string) {
@@ -119,15 +121,10 @@ const md = require('markdown-it')({
         return '<pre class="hljs"><code>' + md.utils.escapeHtml(str) + '</code></pre>'
     }
 })
-const mk = require('markdown-it-katex')
+const mk = require('@iktakahiro/markdown-it-katex')
 md.use(mk, {
     throwOnError: true,
     errorColor: "#cc0000",
-    delimiters:
-        [
-            { left: "$$", right: "$$", display: true },
-            { left: "$", right: "$", display: true }
-        ]
 })
 
 function contentProcess(content: string, file: File | null): string {
@@ -147,12 +144,7 @@ function contentProcess(content: string, file: File | null): string {
         newContent += content.slice(start, content.length)
         content = newContent
     }
-    return content.replace(/\\rm/g, '\\text')
-        .replace(/\\boldsymbol/g, '\\bold')
-        .replace(/\$ +/g, '$')
-        .replace(/ +\$/g, '$')
-        .replace(/\\exist/g, '\\exists')
-        .replace(/\\empty/g, '\\emptyset')
+    return content
 }
 
 export default function App(props: Props) {
@@ -190,7 +182,7 @@ export default function App(props: Props) {
 
     const [currentFile, setCurrentFile] = useState(null as File | null)
     const [title, setTitle] = useState('标题')
-    const [content, setContent] = useState('')
+    const [content, setContent] = useState('# 请选择一个 Markdown 文件打开')
 
     const [freshCount, setFreshCount] = useState(0)
     const fresh = () => setFreshCount(freshCount + 1)
