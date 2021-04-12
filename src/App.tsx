@@ -106,8 +106,19 @@ const folder = {
     files: []
 } as Folder
 
-
-const md = require('markdown-it')()
+const hljs = require('highlight.js')
+const md = require('markdown-it')({
+    highlight: function (str: string, lang: string) {
+        if (lang && hljs.getLanguage(lang)) {
+            try {
+                return '<pre class="hljs"><code>' +
+                    hljs.highlight(lang, str, true).value +
+                    '</code></pre>'
+            } catch (__) { }
+        }
+        return '<pre class="hljs"><code>' + md.utils.escapeHtml(str) + '</code></pre>'
+    }
+})
 const mk = require('markdown-it-katex')
 md.use(mk, {
     throwOnError: true,
