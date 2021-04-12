@@ -9,6 +9,7 @@ import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
+import ReactMarkdown from 'react-markdown'
 import { makeStyles, useTheme, Theme, createStyles } from '@material-ui/core/styles'
 
 import SubList from './SubList'
@@ -201,9 +202,9 @@ export default function App(props: Props) {
             </nav>
             <main className={classes.content}>
                 <div className={classes.toolbar} />
-                <Typography paragraph>
+                <ReactMarkdown>
                     {content}
-                </Typography>
+                </ReactMarkdown>
             </main>
         </div>
     )
