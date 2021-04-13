@@ -16,9 +16,12 @@
 
 ## 界面
 
-![](image/2021-04-13-00-02-44.png)
+![](https://pic3.58cdn.com.cn/nowater/webim/big/n_v2107d04ca70fb43868e6b060896704d75.png)
 
-![](image/2021-04-13-00-04-30.png)
+![](https://pic3.58cdn.com.cn/nowater/webim/big/n_v2db809fd3683444ba8a60989fc99d8fe9.png)
+
+![](https://pic3.58cdn.com.cn/nowater/webim/big/n_v269cc40fab42c40cca572cd0639e152fb.png)
+
 
 
 ## 部署
