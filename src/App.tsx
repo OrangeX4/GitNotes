@@ -55,6 +55,7 @@ const useStyles = makeStyles((theme: Theme) =>
         github: {
             '& > *': {
                 marginRight: theme.spacing(2),
+                marginBottom: theme.spacing(1),
             },
         }
     }),
@@ -273,7 +274,7 @@ export default function App() {
     }
 
     const [currentFile, setCurrentFile] = useState(null as File | null)
-    const [title, setTitle] = useState('OrangeX4\'s Notes')
+    const [title, setTitle] = useState('GitNotes | OrangeX4\'s Notes')
     const [content, setContent] = useState('')
 
     const [freshCount, setFreshCount] = useState(0)
