@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         content: {
             flexGrow: 1,
-            padding: theme.spacing(3),
+            padding: theme.spacing(3)
         },
         github: {
             '& > *': {
@@ -352,7 +352,7 @@ export default function App() {
                     </Drawer>
                 </Hidden>
             </nav>
-            <main className={classes.content}>
+            <main className={classes.content} style={{width: '100%'}}>
                 <div className={classes.toolbar} />
                 {getQuery().git ? (
                     <div dangerouslySetInnerHTML={{ __html: md.render(contentProcess(content, currentFile)) }} />

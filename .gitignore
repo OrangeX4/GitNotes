@@ -12,6 +12,7 @@
 # /build
 workers-site
 wrangler.toml
+dist
 
 # misc
 .DS_Store
