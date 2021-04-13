@@ -6,7 +6,7 @@
 
 ## Demo
 
-### [OrangeX4's Notes](https://notes.orangex4.cool/)
+### [OrangeX4's Notes](https://notes.orangex4.workers.dev/)
 
 你可以**直接使用**这个网址查看你要查看的笔记 Repo, 并不需要挂载你自己的 GitNotes.
 
