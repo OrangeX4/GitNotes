@@ -10,3 +10,42 @@ img {
 .MuiAppBar-colorDefault {
     background-color: white !important;
 }
+
+html body table td, html body table th {
+    border: 1px solid #d6d6d6;
+    padding: 6px 13px;
+}
+
+html body table th {
+    font-weight: bold;
+    color: #000;
+}
+
+td {
+    display: table-cell;
+    vertical-align: inherit;
+}
+
+th {
+    display: table-cell;
+    vertical-align: inherit;
+    font-weight: bold;
+    text-align: -internal-center;
+}
+
+thead {
+    display: table-header-group;
+    vertical-align: middle;
+    border-color: inherit;
+}
+
+html body table {
+    margin: 10px 0 15px 0;
+    border-collapse: collapse;
+    border-spacing: 0;
+    display: block;
+    width: 100%;
+    overflow: auto;
+    word-break: normal;
+    word-break: keep-all;
+}
