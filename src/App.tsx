@@ -185,7 +185,7 @@ function contentProcess(content: string, file: File | null): string {
         newContent += content.slice(start, content.length)
         content = newContent
     }
-    return content.replace(/\$ +/g, '$').replace(/ +\$/g, '$')
+    return content
 }
 
 interface Query {
