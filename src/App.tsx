@@ -19,6 +19,12 @@ import SubList from './SubList'
 
 import { Folder, File } from './template'
 
+// ---------------------------------------------------
+// const search = window.location.search
+// 请在这里更改你需要的 url 参数
+const search = '?git=github&github=typoverflow/note'
+// ---------------------------------------------------
+
 const drawerWidth = 300
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -194,8 +200,8 @@ interface Query {
 
 function getQuery(): Query {
     const result = {} as Query
-    if (window.location.search.length > 1) {
-        const query = window.location.search.substring(1)
+    if (search.length > 1) {
+        const query = search.substring(1)
         const vars = query.split("&")
         for (var i = 0; i < vars.length; i++) {
             var pair = vars[i].split("=")
