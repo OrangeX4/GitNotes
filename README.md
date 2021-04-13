@@ -23,8 +23,45 @@
 ![](https://pic3.58cdn.com.cn/nowater/webim/big/n_v269cc40fab42c40cca572cd0639e152fb.png)
 
 
+## 个人部署
 
-## 部署
+将代码 Clone 下来, 修改 `src/App.tsx` 文件的内容:
+
+![](https://pic3.58cdn.com.cn/nowater/webim/big/n_v2c2a623c7ad164c30a3cf8f9d8f30b7a6.png)
+
+修改为以下形式:
+
+``` js
+// ---------------------------------------------------
+// const search = window.location.search
+// 请在这里更改你需要的 url 参数
+const search = '?git=github&github=typoverflow/note'
+// ---------------------------------------------------
+```
+
+`search` 设为 URL 参数.
+
+要修改标题, 可以使用搜索功能搜索字符串并修改 `public/index.html` 和 `src\App.tsx`.
+
+更换图标, 可以更换 `public/profile.ico` 和 `public/profile.jpg` 文件.
+
+进行完这些操作之后, 运行
+
+``` sh
+yarn start
+```
+
+便可实时浏览效果.
+
+确认无误后, 运行
+
+``` sh
+yarn build
+```
+
+便可生成 `build` 文件夹, 将该文件夹挂载到你的域名下, 你的专属 GitNotes 笔记便挂载好了!
+
+## 服务部署
 
 运行命令:
 

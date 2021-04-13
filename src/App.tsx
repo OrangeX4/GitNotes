@@ -20,9 +20,9 @@ import SubList from './SubList'
 import { Folder, File } from './template'
 
 // ---------------------------------------------------
-// const search = window.location.search
+const search = window.location.search
 // 请在这里更改你需要的 url 参数
-const search = '?git=github&github=typoverflow/note'
+// const search = '?git=github&github=typoverflow/note'
 // ---------------------------------------------------
 
 const drawerWidth = 300
