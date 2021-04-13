@@ -4,6 +4,10 @@
 
 优点: **数学公式支持和移动端适配**.
 
+笔记 Git Repo 参考: [NJUAI-Notes](https://github.com/OrangeX4/NJUAI-Notes)
+
+对应页面: [OrangeX's Notes](https://notes.orangex4.cool/?git=gitlab)
+
 ## Demo
 
 ### [OrangeX4's Notes](https://notes.orangex4.cool/)
