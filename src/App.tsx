@@ -352,7 +352,8 @@ export default function App() {
                     </Drawer>
                 </Hidden>
             </nav>
-            <main className={classes.content} style={{width: '100%'}}>
+            {/* <main className={classes.content} style={{width: '100%'}}> */}
+            <main className={classes.content}>
                 <div className={classes.toolbar} />
                 {getQuery().git ? (
                     <div dangerouslySetInnerHTML={{ __html: md.render(contentProcess(content, currentFile)) }} />
