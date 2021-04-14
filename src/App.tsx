@@ -239,6 +239,8 @@ export default function App() {
     }
 
     function handleFileClick(file: File) {
+        setMobileOpen(false)
+        
         const query = getQuery()
         let preUrl = ''
         let aftUrl = ''
@@ -252,18 +254,19 @@ export default function App() {
         const url = `${preUrl}${query.git === 'gitlab' ?
             encodeURI(getPath(file.parent) + file.name).replace(/\//g, '%2F') :
             encodeURI(getPath(file.parent) + file.name)
-            }${aftUrl}`
+        }${aftUrl}`
         if (!isMarkdown(file.name)) {
             console.log(window.location.search)
             window.open(url, '_blank')
             return
         }
+        setTitle(file.name)
+        setContent('# 加载中...')
         const request = new XMLHttpRequest()
         request.open('GET', url)
         request.onreadystatechange = function () {
             if (request.readyState === 4 && request.status === 200) {
                 setCurrentFile(file)
-                setTitle(file.name)
                 setContent(request.responseText)
             }
         }
@@ -373,11 +376,12 @@ export default function App() {
 
                         <h1>OrangeX4 的笔记</h1>
                         <h2><a href="./?git=gitlab">OrangeX4's Notes</a></h2>
-                        <h1>其他笔记</h1>
+                        <h1>推荐的其他笔记</h1>
                         <h2><a href="./?git=github&github=typoverflow/note">Typoverflow's Notes</a></h2>
                         <h2><a href="./?git=github&github=fengdu78/Coursera-ML-AndrewNg-Notes">Coursera-ML-AndrewNg-Notes</a></h2>
+                        <h2><a href="./?git=github&github=fengdu78/Data-Science-Notes">Data-Science-Notes</a></h2>
 
-                        <h1>GitHub</h1>
+                        <h1>GitHub Repo</h1>
                         <form className={classes.github} noValidate autoComplete="off">
                             <TextField id="standard-basic" value={githubRepo} onChange={(e) => setGithubRepo(e.target.value)} label="Repo" />
                             <TextField id="standard-basic" value={githubToken} onChange={(e) => setGithubToken(e.target.value)} label="Token" />
@@ -389,7 +393,7 @@ export default function App() {
                         <p>GitHub 对于 API 访问有一定的限制, 超过次数便需要 Token 才能继续浏览.</p>
                         <p>详见 <a href="https://docs.github.com/cn/github/authenticating-to-github/creating-a-personal-access-token">创建 Token</a>.</p>
 
-                        <h1>GitLab</h1>
+                        <h1>GitLab Repo</h1>
                         <form className={classes.github} noValidate autoComplete="off">
                             <TextField id="standard-basic" value={gitlabHost} onChange={(e) => setGitlabHost(e.target.value)} label="Host" />
                             <TextField id="standard-basic" value={gitlabId} onChange={(e) => setGitlabId(e.target.value)} label="Id" />
