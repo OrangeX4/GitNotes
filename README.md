@@ -37,11 +37,7 @@ npm install
 
 ## 个人部署
 
-将代码 Clone 下来, 修改 `src/App.tsx` 文件的内容:
-
-![](https://pic3.58cdn.com.cn/nowater/webim/big/n_v2c2a623c7ad164c30a3cf8f9d8f30b7a6.png)
-
-修改为以下形式:
+将代码 Clone 下来, 修改 `src/App.tsx` 文件对应的内容为以下形式:
 
 ``` js
 // ---------------------------------------------------
