@@ -92,9 +92,10 @@ function getFolderData(folder: Folder, callback: (folders: Folder[], files: File
     if (query.git === 'gitlab') {
         url = `https://${query.gitlab}/api/v4/projects/${query.id}/repository/tree?per_page=1000&ref=master&path=${encodeURI(getPath(folder))}`
     } else {
-        url = `https://api.github.com/repos/${query.github}/contents/${encodeURI(getPath(folder))}${query.token ? `?access_token=${query.token}` : ''}`
+        url = `https://api.github.com/repos/${query.github}/contents/${encodeURI(getPath(folder))}`
     }
     request.open('GET', url)
+    request.setRequestHeader("Authorization", `token ${query.token}`)
     request.onreadystatechange = function () {
         if (request.readyState === 4 && request.status === 200) {
             const tree = JSON.parse(request.responseText)
