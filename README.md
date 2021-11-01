@@ -28,7 +28,7 @@
 
 ``` sh
 npm install yarn -g
-npm install
+yarn install
 ```
 
 等他安装完成后, 你就可以通过 `yarn start` 打开一个开发服务器或者 `yarn build` 生成静态文件了.
