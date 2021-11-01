@@ -95,7 +95,9 @@ function getFolderData(folder: Folder, callback: (folders: Folder[], files: File
         url = `https://api.github.com/repos/${query.github}/contents/${encodeURI(getPath(folder))}`
     }
     request.open('GET', url)
-    request.setRequestHeader("Authorization", `token ${query.token}`)
+    if (query.token){
+        request.setRequestHeader("Authorization", `token ${query.token}`)
+    }
     request.onreadystatechange = function () {
         if (request.readyState === 4 && request.status === 200) {
             const tree = JSON.parse(request.responseText)
