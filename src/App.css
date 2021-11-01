@@ -59,6 +59,17 @@ blockquote {
   background:#EDEDED;
 }
 
+code {
+    font-family: Menlo,Monaco,Consolas,'Courier New',monospace;
+    background-color: #f0f0f0;
+    border-radius: 3px;
+    padding: 3px;
+}
+
+pre code {
+    background-color: transparent;
+}
+
 /* blockquote::before {
   content: "\201C";
   color: #78C0A8;

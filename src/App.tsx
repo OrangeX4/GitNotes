@@ -264,13 +264,17 @@ export default function App() {
             return
         }
         setTitle(file.name)
-        setContent('# 加载中...')
+        setContent('# 加载中...\n\n如果您访问的是 GitHub 上的笔记, 也许是因为国内访问 GitHub 速度不佳, 可以自行寻找方式解决.')
         const request = new XMLHttpRequest()
         request.open('GET', url)
         request.onreadystatechange = function () {
-            if (request.readyState === 4 && request.status === 200) {
-                setCurrentFile(file)
-                setContent(request.responseText)
+            if (request.readyState === 4) {
+                if (request.status === 200) {
+                    setCurrentFile(file)
+                    setContent(request.responseText)
+                } else {
+                    setContent('# 加载失败...\n\n如果您访问的是 GitHub 上的笔记, 也许是因为国内访问 GitHub 速度不佳, 可以自行寻找方式解决.')
+                }
             }
         }
         request.send(null)
