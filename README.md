@@ -76,3 +76,7 @@ yarn build
 ```
 
 并将 `build` 目录下的静态文件挂载在你的域名中.
+
+## License
+
+This project is licensed under the MIT License.
